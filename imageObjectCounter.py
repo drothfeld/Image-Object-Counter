@@ -13,7 +13,7 @@ logging.getLogger().setLevel(logging.INFO)
 start_time = time.time()
 displayImage = False
 filename = sys.argv[-1]
-ignoreFiles = ["imageObjectCounter.py", "runObjectCounter.sh", "_object_counter_data.txt"]
+ignoreFiles = ["imageObjectCounter.py", "runObjectCounter.sh", "object_counter_data.txt", "README.md"]
 
 # Checking script arguments
 if filename in ignoreFiles:
@@ -34,8 +34,8 @@ if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
     labels = measure.label(objects)
     # Writing to file
     runtime = time.time() - start_time
-    with open('_object_counter_data.txt', 'a') as output:
-        output.write('Image: %s | ' %(filename))
+    with open('object_counter_data.txt', 'a') as output:
+        output.write('Filename: %s | ' %(filename))
         output.write('Objects: %d | ' %(labels.max()))
         output.write('Coverage: %f | ' %(objects.mean()))
         output.write('Runtime: %f\n' %(runtime))
