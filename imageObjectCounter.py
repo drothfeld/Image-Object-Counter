@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import logging
 import sys
 
-# Checking Script Arguments
+# Checking script arguments
 displayImage = False
 filename = sys.argv[-1]
 if len(sys.argv) == 3:
@@ -17,17 +17,21 @@ if len(sys.argv) == 3:
         displayImage = True
     # Invalid parameter entered
     else:
-        logging.error(' | Invalid parameter used: ' + sys.argv[1])
+        logging.error('Invalid parameter used: ' + sys.argv[1])
         quit()
 
 if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
-    # Running Image Analysis
-    logging.info(' | Image file successfully read.\n')
-    im = io.imread(filename, as_grey=True)
-    val = filters.threshold_otsu(im)
-    drops = ndimage.binary_fill_holes(im < val)
+    # Running image analysis
+    image = io.imread(filename, as_grey=True)
+    value = filters.threshold_otsu(image)
+    objects = ndimage.binary_fill_holes(image < value)
+    labels = measure.label(objects)
+    print('Image: %s' %(filename))
+    print('Objects: %f' %(labels.max()))
+    print('Coverage: %f' %(objects.mean()))
+    # Showing image
     if displayImage:
-        plt.imshow(drops, cmap='gray')
+        plt.imshow(objects, cmap='gray')
         plt.show()
 else:
-    logging.error(' | No correct image file was specified of type: .png .jpg .jpeg\n')
+    logging.error('No correct image file was specified of type: .png .jpg .jpeg')
