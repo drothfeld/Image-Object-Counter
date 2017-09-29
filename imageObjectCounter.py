@@ -8,17 +8,22 @@ from scipy import ndimage
 import matplotlib.pyplot as plt
 import logging, time, sys
 
+# Default values
+logging.getLogger().setLevel(logging.INFO)
 start_time = time.time()
 displayImage = False
+filename = sys.argv[-1]
+ignoreFiles = ["imageObjectCounter.py", "runObjectCounter.sh", "_object_counter_data.txt"]
 
 # Checking script arguments
-filename = sys.argv[-1]
+if filename in ignoreFiles:
+    quit()
 if len(sys.argv) == 3:
     if sys.argv[1] == '-d':
         displayImage = True
     # Invalid parameter entered
     else:
-        logging.error('Invalid parameter used: ' + sys.argv[1])
+        logging.error('Invalid parameter used: %s' %(sys.argv[1]))
         quit()
 
 if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
@@ -28,14 +33,16 @@ if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
     objects = ndimage.binary_fill_holes(image < value)
     labels = measure.label(objects)
     # Writing to file
-    with open('object_counter_data.txt', 'a') as output:
+    runtime = time.time() - start_time
+    with open('_object_counter_data.txt', 'a') as output:
         output.write('Image: %s | ' %(filename))
         output.write('Objects: %d | ' %(labels.max()))
         output.write('Coverage: %f | ' %(objects.mean()))
-        output.write('Runtime: %f\n' %(time.time() - start_time))
+        output.write('Runtime: %f\n' %(runtime))
+    logging.info('FILE:(%s) successfully finished in %f seconds'%(filename, runtime))
     # Showing image
     if displayImage:
         plt.imshow(objects, cmap='gray')
         plt.show()
 else:
-    logging.error('No correct image file was specified of type: .png .jpg .jpeg')
+    logging.error('FILE:(%s) is not a valid file of type: .png .jpg .jpeg' %(filename))
