@@ -6,11 +6,12 @@
 from skimage import io, filters, measure
 from scipy import ndimage
 import matplotlib.pyplot as plt
-import logging
-import sys
+import logging, time, sys
+
+start_time = time.time()
+displayImage = False
 
 # Checking script arguments
-displayImage = False
 filename = sys.argv[-1]
 if len(sys.argv) == 3:
     if sys.argv[1] == '-d':
@@ -26,9 +27,12 @@ if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
     value = filters.threshold_otsu(image)
     objects = ndimage.binary_fill_holes(image < value)
     labels = measure.label(objects)
-    print('Image: %s' %(filename))
-    print('Objects: %f' %(labels.max()))
-    print('Coverage: %f' %(objects.mean()))
+    # Writing to file
+    with open('object_counter_data.txt', 'a') as output:
+        output.write('Image: %s | ' %(filename))
+        output.write('Objects: %d | ' %(labels.max()))
+        output.write('Coverage: %f | ' %(objects.mean()))
+        output.write('Runtime: %f\n' %(time.time() - start_time))
     # Showing image
     if displayImage:
         plt.imshow(objects, cmap='gray')
